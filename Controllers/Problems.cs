@@ -41,7 +41,7 @@ namespace SanatoryApi.Controllers
         public async Task<ActionResult> DeleteProblem(int id)
         {
             var problemToDelete = db.Problems.FirstOrDefault(s => s.Id == id);
-            if (problemToDelete.Id == id)
+            if (problemToDelete != null)
             {
                 db.Problems.Remove(problemToDelete);
                 await db.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace SanatoryApi.Controllers
             }
             else
             {
-                return BadRequest("Произошла ошибка!");
+                return BadRequest("Задача для удаления не найдена!");
             }
         }
     }

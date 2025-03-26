@@ -41,7 +41,7 @@ namespace SanatoryApi.Controllers
         public async Task<ActionResult> DeleteRoom(int id)
         {
             var roomToDelete = db.Rooms.FirstOrDefault(s => s.Id == id);
-            if (roomToDelete.Id == id && roomToDelete.Status == "Свободен")
+            if (roomToDelete != null)
             {
                 db.Rooms.Remove(roomToDelete);
                 await db.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace SanatoryApi.Controllers
             }
             else
             {
-                return BadRequest("Произошла ошибка!");
+                return BadRequest("Номер для сноса не найден!");
             }
         }
     }

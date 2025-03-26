@@ -7,11 +7,11 @@ public partial class Event
 {
     public int Id { get; set; }
 
-    public string? Title { get; set; }
+    public string Title { get; set; } = null!;
 
-    public int? Times { get; set; }
+    public int Times { get; set; }
 
-    public string? Place { get; set; }
+    public string Place { get; set; } = null!;
 
     public virtual ICollection<Daytime> Daytimes { get; set; } = new List<Daytime>();
 }

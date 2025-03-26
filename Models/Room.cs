@@ -7,13 +7,15 @@ public partial class Room
 {
     public int Id { get; set; }
 
-    public int? Number { get; set; }
+    public int Number { get; set; }
 
-    public string? Type { get; set; }
+    public string Type { get; set; } = null!;
 
-    public decimal? Price { get; set; }
+    public decimal Price { get; set; }
 
-    public string? Status { get; set; }
+    public int StatusId { get; set; }
 
     public virtual ICollection<Guest> Guests { get; set; } = new List<Guest>();
+
+    public virtual Status Status { get; set; } = null!;
 }

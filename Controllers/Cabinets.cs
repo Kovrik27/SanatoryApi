@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SanatoryApi.Models;
 
@@ -41,7 +40,7 @@ namespace SanatoryApi.Controllers
         public async Task<ActionResult> DeleteCabinet(int id)
         {
             var cabinetToDelete = db.Cabinets.FirstOrDefault(s => s.Id == id);
-            if (cabinetToDelete.Id == id)
+            if (cabinetToDelete != null)
             {
                 db.Cabinets.Remove(cabinetToDelete);
                 await db.SaveChangesAsync();
@@ -49,7 +48,7 @@ namespace SanatoryApi.Controllers
             }
             else
             {
-                return BadRequest("Произошла ошибка!");
+                return BadRequest("Кабинет для сноса не найден!");
             }
         }
     }

@@ -36,6 +36,8 @@ public partial class SanatoryContext : DbContext
 
     public virtual DbSet<Staff> Staffs { get; set; }
 
+    public virtual DbSet<Status> Statuses { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -58,7 +60,9 @@ public partial class SanatoryContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
             entity.Property(e => e.Number).HasColumnType("int(11)");
-            entity.Property(e => e.Type).HasMaxLength(255);
+            entity.Property(e => e.Type)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
         });
 
         modelBuilder.Entity<Day>(entity =>
@@ -71,6 +75,7 @@ public partial class SanatoryContext : DbContext
                 .HasColumnName("ID");
             entity.Property(e => e.Day1)
                 .HasMaxLength(255)
+                .HasDefaultValueSql("''")
                 .HasColumnName("Day");
         });
 
@@ -92,6 +97,7 @@ public partial class SanatoryContext : DbContext
 
             entity.HasOne(d => d.Event).WithMany(p => p.Daytimes)
                 .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Daytime_Events_ID");
         });
 
@@ -102,9 +108,13 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
-            entity.Property(e => e.Place).HasMaxLength(255);
+            entity.Property(e => e.Place)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
             entity.Property(e => e.Times).HasColumnType("int(11)");
-            entity.Property(e => e.Title).HasMaxLength(255);
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
         });
 
         modelBuilder.Entity<Guest>(entity =>
@@ -118,10 +128,18 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
-            entity.Property(e => e.Lastname).HasMaxLength(255);
-            entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.Pasport).HasMaxLength(255);
-            entity.Property(e => e.Policy).HasMaxLength(255);
+            entity.Property(e => e.Lastname)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Pasport)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Policy)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
             entity.Property(e => e.ProcedureId)
                 .HasDefaultValueSql("'1'")
                 .HasColumnType("int(11)")
@@ -129,14 +147,18 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.RoomId)
                 .HasColumnType("int(11)")
                 .HasColumnName("RoomID");
-            entity.Property(e => e.Surname).HasMaxLength(255);
+            entity.Property(e => e.Surname)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
 
             entity.HasOne(d => d.Procedure).WithMany(p => p.Guests)
                 .HasForeignKey(d => d.ProcedureId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Guests_Procedures_ID");
 
             entity.HasOne(d => d.Room).WithMany(p => p.Guests)
                 .HasForeignKey(d => d.RoomId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Guests_Rooms_ID");
         });
 
@@ -149,8 +171,12 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
-            entity.Property(e => e.Description).HasMaxLength(255);
-            entity.Property(e => e.Place).HasMaxLength(255);
+            entity.Property(e => e.Description)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Place)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
         });
 
         modelBuilder.Entity<Procedure>(entity =>
@@ -163,7 +189,9 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.Duration).HasColumnType("int(11)");
             entity.Property(e => e.Price).HasPrecision(19, 2);
-            entity.Property(e => e.Title).HasMaxLength(255);
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -173,20 +201,31 @@ public partial class SanatoryContext : DbContext
             entity.ToTable("Role");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
-            entity.Property(e => e.Title).HasMaxLength(255);
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
         });
 
         modelBuilder.Entity<Room>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
+            entity.HasIndex(e => e.StatusId, "FK_Rooms_Status_Id");
+
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
             entity.Property(e => e.Number).HasColumnType("int(11)");
             entity.Property(e => e.Price).HasPrecision(10);
-            entity.Property(e => e.Status).HasMaxLength(255);
-            entity.Property(e => e.Type).HasMaxLength(255);
+            entity.Property(e => e.StatusId).HasColumnType("int(11)");
+            entity.Property(e => e.Type)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.Rooms)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Rooms_Status_Id");
         });
 
         modelBuilder.Entity<Staff>(entity =>
@@ -205,15 +244,27 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.CabinetId)
                 .HasColumnType("int(11)")
                 .HasColumnName("CabinetID");
-            entity.Property(e => e.JobTitle).HasMaxLength(255);
-            entity.Property(e => e.Lastname).HasMaxLength(255);
-            entity.Property(e => e.Mail).HasMaxLength(255);
-            entity.Property(e => e.Name).HasMaxLength(50);
-            entity.Property(e => e.Phone).HasMaxLength(255);
+            entity.Property(e => e.JobTitle)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Lastname)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Mail)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
             entity.Property(e => e.ProblemId)
                 .HasColumnType("int(11)")
                 .HasColumnName("ProblemID");
-            entity.Property(e => e.Surname).HasMaxLength(255);
+            entity.Property(e => e.Surname)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
             entity.Property(e => e.WorkDaysId).HasColumnType("int(11)");
 
             entity.HasOne(d => d.Cabinet).WithMany(p => p.Staff)
@@ -229,6 +280,18 @@ public partial class SanatoryContext : DbContext
                 .HasConstraintName("FK_Staff_Days_ID");
         });
 
+        modelBuilder.Entity<Status>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("Status");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -236,12 +299,17 @@ public partial class SanatoryContext : DbContext
             entity.HasIndex(e => e.RoleId, "FK_Users_Role_Id");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
-            entity.Property(e => e.Login).HasMaxLength(255);
-            entity.Property(e => e.Password).HasMaxLength(255);
+            entity.Property(e => e.Login)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
             entity.Property(e => e.RoleId).HasColumnType("int(11)");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Users_Role_Id");
         });
 

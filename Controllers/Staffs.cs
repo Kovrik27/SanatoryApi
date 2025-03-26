@@ -24,7 +24,14 @@ namespace SanatoryApi.Controllers
         [HttpPost("AddNewStaff")]
         public async Task<ActionResult> AddNewStaff(Staff staff)
         {
-            db.Staffs.Add(staff);
+            try
+            {
+                db.Staffs.Add(staff);
+            }
+            catch (Exception ex)
+            {
+                BadRequest(ex.Message);
+            }            
             await db.SaveChangesAsync();
             return Ok("Новый сотрудник успешно добавлен!");
         }
@@ -41,7 +48,7 @@ namespace SanatoryApi.Controllers
         public async Task<ActionResult> GoOutStaff(int id)
         {
             var staffToDelete = db.Staffs.FirstOrDefault(s => s.Id == id);
-            if (staffToDelete.Id == id && staffToDelete.CabinetId == null && staffToDelete.ProblemId == null)
+            if (staffToDelete != null && staffToDelete.CabinetId == null && staffToDelete.ProblemId == null)
             {
                 db.Staffs.Remove(staffToDelete);
                 await db.SaveChangesAsync();
@@ -49,7 +56,7 @@ namespace SanatoryApi.Controllers
             }
             else
             {
-                return BadRequest("Произошла ошибка!");
+                return BadRequest("Сотрудник для увольнения не найден!");
             }
         }
     }

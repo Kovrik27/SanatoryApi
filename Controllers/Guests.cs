@@ -41,7 +41,7 @@ namespace SanatoryApi.Controllers
         public async Task<ActionResult> GoOutGuest(int id)
         {
             var guestToDelete = db.Guests.FirstOrDefault(s => s.Id == id);
-            if(guestToDelete.Id == id && guestToDelete.RoomId == null)
+            if (guestToDelete != null)
             {
                 db.Guests.Remove(guestToDelete);
                 await db.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace SanatoryApi.Controllers
             }
             else
             {
-                return BadRequest("Произошла ошибка!");
+                return BadRequest("Гость для выселения не найден!");
             }
         }
     }
