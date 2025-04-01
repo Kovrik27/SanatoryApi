@@ -51,5 +51,19 @@ namespace SanatoryApi.Controllers
                 return Ok(check);
 
         }
+
+        [HttpDelete("DeleteUser")]
+        public async Task<ActionResult> DeleteUser(int id)
+        {
+            var userTodelete = db.Users.FirstOrDefault(s => s.Id == id);
+            if (userTodelete != null)
+            {
+                db.Users.Remove(userTodelete);
+                await db.SaveChangesAsync();
+                return Ok("Юзер успешно удалён!");
+            }
+            else
+                return BadRequest("Юзер для удаления не найден!");
+        }
     }
 }

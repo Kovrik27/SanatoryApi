@@ -30,11 +30,19 @@ namespace SanatoryApi.Controllers
         }
 
         [HttpPut("EditProblem")]
-        public async Task<ActionResult> EditProblem(Problem problem)
+        public async Task<ActionResult> EditProblem(int id)
         {
-            db.Problems.Update(problem);
-            await db.SaveChangesAsync();
-            return Ok("Данные задачи успешно изменены!");
+            var problemToEdit = db.Problems.FirstOrDefault(s => s.Id == id);
+            if(problemToEdit != null)
+            {
+                db.Problems.Update(problemToEdit);
+                await db.SaveChangesAsync();
+                return Ok("Данные задачи успешно изменены!");
+            }
+           else
+            {
+                return BadRequest("Ошибка! Задача для изменения не найдена!");
+            }
         }
 
         [HttpDelete("DeleteProblem/{id}")]
@@ -50,6 +58,16 @@ namespace SanatoryApi.Controllers
             else
             {
                 return BadRequest("Задача для удаления не найдена!");
+            }
+        }
+
+        [HttpPut("EditStatusProblem")]
+        public async Task<ActionResult> EditStatusProblem(int id)
+        {
+            var problemToeditstatus = db.Problems.FirstOrDefault(s => s.Id == id);
+            if(problemToeditstatus != null)
+            {
+                 problemToeditstatus.
             }
         }
     }
