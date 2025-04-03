@@ -11,5 +11,7 @@ public partial class Problem
 
     public string Place { get; set; } = null!;
 
-    public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();
+    public int StatusProblem { get; set; }
+
+    public virtual StatusProblem StatusProblemNavigation { get; set; } = null!;
 }

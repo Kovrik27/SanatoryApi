@@ -13,7 +13,7 @@ public partial class Staff
 
     public string Surname { get; set; } = null!;
 
-    public string JobTitle { get; set; } = null!;
+    public int JobTitleId { get; set; }
 
     public string Phone { get; set; } = null!;
 
@@ -25,9 +25,13 @@ public partial class Staff
 
     public int? WorkDaysId { get; set; }
 
+    public int? UserId { get; set; }
+
     public virtual Cabinet? Cabinet { get; set; }
 
     public virtual Problem? Problem { get; set; }
+
+    public virtual User? User { get; set; }
 
     public virtual Day? WorkDays { get; set; }
 }

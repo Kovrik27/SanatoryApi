@@ -26,6 +26,8 @@ public partial class SanatoryContext : DbContext
 
     public virtual DbSet<Guest> Guests { get; set; }
 
+    public virtual DbSet<JobTitle> JobTitles { get; set; }
+
     public virtual DbSet<Problem> Problems { get; set; }
 
     public virtual DbSet<Procedure> Procedures { get; set; }
@@ -34,9 +36,11 @@ public partial class SanatoryContext : DbContext
 
     public virtual DbSet<Room> Rooms { get; set; }
 
-    public virtual DbSet<Staff> Staffs { get; set; }
+    public virtual DbSet<Staff> Staff { get; set; }
 
     public virtual DbSet<Status> Statuses { get; set; }
+
+    public virtual DbSet<StatusProblem> StatusProblems { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -125,6 +129,8 @@ public partial class SanatoryContext : DbContext
 
             entity.HasIndex(e => e.RoomId, "FK_Guests_Rooms_ID");
 
+            entity.HasIndex(e => e.UserId, "FK_Guests_Users_Id");
+
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
@@ -150,6 +156,7 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Surname)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
+            entity.Property(e => e.UserId).HasColumnType("int(11)");
 
             entity.HasOne(d => d.Procedure).WithMany(p => p.Guests)
                 .HasForeignKey(d => d.ProcedureId)
@@ -160,6 +167,20 @@ public partial class SanatoryContext : DbContext
                 .HasForeignKey(d => d.RoomId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Guests_Rooms_ID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Guests)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_Guests_Users_Id");
+        });
+
+        modelBuilder.Entity<JobTitle>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("JobTitle");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Title).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Problem>(entity =>
@@ -167,6 +188,8 @@ public partial class SanatoryContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("Problem");
+
+            entity.HasIndex(e => e.StatusProblem, "FK_Problem_StatusProblem_Id");
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
@@ -177,6 +200,14 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Place)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
+            entity.Property(e => e.StatusProblem)
+                .HasDefaultValueSql("'1'")
+                .HasColumnType("int(11)");
+
+            entity.HasOne(d => d.StatusProblemNavigation).WithMany(p => p.Problems)
+                .HasForeignKey(d => d.StatusProblem)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Problem_StatusProblem_Id");
         });
 
         modelBuilder.Entity<Procedure>(entity =>
@@ -238,15 +269,15 @@ public partial class SanatoryContext : DbContext
 
             entity.HasIndex(e => e.ProblemId, "FK_Staff_Problem_ID");
 
+            entity.HasIndex(e => e.UserId, "FK_Staff_Users_Id");
+
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
             entity.Property(e => e.CabinetId)
                 .HasColumnType("int(11)")
                 .HasColumnName("CabinetID");
-            entity.Property(e => e.JobTitle)
-                .HasMaxLength(255)
-                .HasDefaultValueSql("''");
+            entity.Property(e => e.JobTitleId).HasColumnType("int(11)");
             entity.Property(e => e.Lastname)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
@@ -265,6 +296,7 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Surname)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
+            entity.Property(e => e.UserId).HasColumnType("int(11)");
             entity.Property(e => e.WorkDaysId).HasColumnType("int(11)");
 
             entity.HasOne(d => d.Cabinet).WithMany(p => p.Staff)
@@ -274,6 +306,10 @@ public partial class SanatoryContext : DbContext
             entity.HasOne(d => d.Problem).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.ProblemId)
                 .HasConstraintName("FK_Staff_Problem_ID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Staff)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK_Staff_Users_Id");
 
             entity.HasOne(d => d.WorkDays).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.WorkDaysId)
@@ -285,6 +321,18 @@ public partial class SanatoryContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("Status");
+
+            entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasDefaultValueSql("''");
+        });
+
+        modelBuilder.Entity<StatusProblem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("StatusProblem");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.Title)

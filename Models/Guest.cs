@@ -25,7 +25,11 @@ public partial class Guest
 
     public int ProcedureId { get; set; }
 
+    public int? UserId { get; set; }
+
     public virtual Procedure Procedure { get; set; } = null!;
 
     public virtual Room Room { get; set; } = null!;
+
+    public virtual User? User { get; set; }
 }
