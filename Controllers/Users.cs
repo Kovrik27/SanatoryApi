@@ -15,7 +15,7 @@ namespace SanatoryApi.Controllers
             this.db = db;
         }
 
-        [HttpGet]
+        [HttpGet("GetAllUsers")]
         public async Task<List<User>> GetUsers()
         {
             return new List<User>(await db.Users.ToListAsync());

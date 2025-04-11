@@ -13,4 +13,5 @@ public partial class Event
 
     public string Place { get; set; } = null!;
 
+    public virtual ICollection<Daytime> Daytimes { get; set; } = new List<Daytime>();
 }

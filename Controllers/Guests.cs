@@ -52,5 +52,8 @@ namespace SanatoryApi.Controllers
                 return BadRequest("Гость для выселения не найден!");
             }
         }
+
+        [HttpPost("AddNewProcedureOnGuest")]
+        public async 
     }
 }

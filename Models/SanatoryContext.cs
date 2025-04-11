@@ -267,6 +267,8 @@ public partial class SanatoryContext : DbContext
 
             entity.HasIndex(e => e.WorkDaysId, "FK_Staff_Days_ID");
 
+            entity.HasIndex(e => e.JobTitleId, "FK_Staff_JobTitle_Id");
+
             entity.HasIndex(e => e.ProblemId, "FK_Staff_Problem_ID");
 
             entity.HasIndex(e => e.UserId, "FK_Staff_Users_Id");
@@ -302,6 +304,11 @@ public partial class SanatoryContext : DbContext
             entity.HasOne(d => d.Cabinet).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.CabinetId)
                 .HasConstraintName("FK_Staff_Cabinet_ID");
+
+            entity.HasOne(d => d.JobTitle).WithMany(p => p.Staff)
+                .HasForeignKey(d => d.JobTitleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Staff_JobTitle_Id");
 
             entity.HasOne(d => d.Problem).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.ProblemId)

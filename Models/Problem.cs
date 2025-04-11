@@ -13,5 +13,7 @@ public partial class Problem
 
     public int StatusProblem { get; set; }
 
+    public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();
+
     public virtual StatusProblem StatusProblemNavigation { get; set; } = null!;
 }

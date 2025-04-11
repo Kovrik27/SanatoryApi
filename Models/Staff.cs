@@ -29,6 +29,8 @@ public partial class Staff
 
     public virtual Cabinet? Cabinet { get; set; }
 
+    public virtual JobTitle JobTitle { get; set; } = null!;
+
     public virtual Problem? Problem { get; set; }
 
     public virtual User? User { get; set; }

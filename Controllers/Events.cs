@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SanatoryApi.DoubleModels;
 using SanatoryApi.Models;
-using System.Data;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace SanatoryApi.Controllers
 {
@@ -20,11 +19,6 @@ namespace SanatoryApi.Controllers
 
         private static List<EventOnDay> eventsOnDays = new();
 
-        [HttpGet("GetAllEvents")]
-        public async Task<List<Event>> GetAllEvents()
-        {
-            return new List<Event>(await db.Events.ToListAsync());
-        }
 
         [HttpGet("GetAllEventsOnDay")]
         public ActionResult<EventOnDay> GetAllEventsOnDay()
@@ -47,7 +41,7 @@ namespace SanatoryApi.Controllers
             return Ok("Мероприятие на день успешно добавлено!");
         }
 
-        [HttpPut("EditEventOnDay")]
+        //[HttpPut("EditEventOnDay")]
         //public async ActionResult<Event> EditEventOnDay(DateOnly date, int EventId)
         //{
         //    var day = eventsOnDays.FirstOrDefault(d => d.Day == date);
@@ -66,44 +60,22 @@ namespace SanatoryApi.Controllers
         //    {
                 
         //    }
-        //}
+        //}   
 
-        [HttpPost("AddNewEvent")]
-        public async Task<ActionResult> AddNewEvent(Event eventt)
-        {
-            db.Events.Add(eventt);
-            await db.SaveChangesAsync();
-            return Ok("Новое мероприятие успешно добавлено!");
-        }
-
-        //[HttpPost("AddNewEventOnDay")]
-        //public async Task<ActionResult> AddNewEventOnDay()
+        //[HttpDelete("DeleteEvent/{id}")]
+        //public async Task<ActionResult> DeleteEvent(int id)
         //{
-
+        //    var eventToDelete = db.Events.FirstOrDefault(s => s.Id == id);
+        //    if (eventToDelete != null)
+        //    {
+        //        db.Events.Remove(eventToDelete);
+        //        await db.SaveChangesAsync();
+        //        return Ok("Мероприятие успешно удалено/завершено!");
+        //    }
+        //    else
+        //    {
+        //        return BadRequest("Мероприятие для удаления/завершения не найдено!");
+        //    }
         //}
-
-        [HttpPut("EditEvent")]
-        public async Task<ActionResult> EditeVENT(Event eventt)
-        {
-            db.Events.Update(eventt);
-            await db.SaveChangesAsync();
-            return Ok("Данные мероприятия успешно изменены!");
-        }
-
-        [HttpDelete("DeleteEvent/{id}")]
-        public async Task<ActionResult> DeleteEvent(int id)
-        {
-            var eventToDelete = db.Events.FirstOrDefault(s => s.Id == id);
-            if (eventToDelete != null)
-            {
-                db.Events.Remove(eventToDelete);
-                await db.SaveChangesAsync();
-                return Ok("Мероприятие успешно удалено/завершено!");
-            }
-            else
-            {
-                return BadRequest("Мероприятие для удаления/завершения не найдено!");
-            }
-        }
     }
 }
