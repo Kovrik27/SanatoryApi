@@ -11,11 +11,11 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
-    public int RoleId { get; set; }
+    public int? RoleId { get; set; }
 
     public virtual ICollection<Guest> Guests { get; set; } = new List<Guest>();
 
-    public virtual Role Role { get; set; } = null!;
+    public virtual Role Role { get; set; }
 
     public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();
 }

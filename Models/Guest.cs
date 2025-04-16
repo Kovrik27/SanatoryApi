@@ -16,7 +16,7 @@ public partial class Guest
     public string Pasport { get; set; } = null!;
 
     public string Policy { get; set; } = null!;
-
+ 
     public DateOnly DataArrival { get; set; }
 
     public DateOnly DataOfDeparture { get; set; }

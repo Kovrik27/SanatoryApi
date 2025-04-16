@@ -53,7 +53,7 @@ namespace SanatoryApi.Controllers
             }
         }
 
-        [HttpPost("AddNewProcedureOnGuest")]
-        public async 
+        //[HttpPost("AddNewProcedureOnGuest")]
+        //public async 
     }
 }

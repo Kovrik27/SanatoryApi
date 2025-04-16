@@ -62,9 +62,9 @@ namespace SanatoryApi.Controllers
         }
 
         [HttpPut("EditStatusProblem")]
-        public async Task<ActionResult> EditStatusProblem(int id)
+        public async Task<ActionResult> EditStatusProblem(Problem problem)
         {
-            var problemToeditstatus = db.Problems.FirstOrDefault(s => s.Id == id);
+            var problemToeditstatus = db.Problems.FirstOrDefault(s => s.Id == problem.Id);
             if (problemToeditstatus != null)
             {
                 problemToeditstatus.StatusProblem = 2;

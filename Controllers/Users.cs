@@ -44,7 +44,7 @@ namespace SanatoryApi.Controllers
             {
                 return BadRequest("Введите данные");
             }
-            var check = db.Users.FirstOrDefault(u => u.Login == user.Login && u.Password == user.Password);
+            var check = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login && u.Password == user.Password);
             if (check == null)
                 return BadRequest("Пользователь не найден");
             else
