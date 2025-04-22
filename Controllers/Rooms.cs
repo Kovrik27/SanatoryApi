@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SanatoryApi.DoubleModels;
 using SanatoryApi.Models;
 
 namespace SanatoryApi.Controllers
@@ -15,10 +16,27 @@ namespace SanatoryApi.Controllers
             this.db = db;
         }
 
-        [HttpGet("GetAllRooms")]
-        public async Task<List<Room>> GetAllRooms()
+        //[HttpGet("GetAllRooms")]
+        //public async Task<List<Room>> GetAllRooms()
+        //{
+        //    return new List<Room>(await db.Rooms.ToListAsync());
+        //}
+
+        [HttpGet("GetRoomWithStatus")]
+        public async Task<ActionResult<List<Room>>> GetRoomWithStatus()
         {
-            return new List<Room>(await db.Rooms.ToListAsync());
+            var rooms = await db.Rooms.Include(s=> s.Status).ToListAsync();
+
+            var rms = rooms.Select(s => new RoomWithStatus
+            {
+                Id = s.Id,
+                Number = s.Number,
+                Price = s.Price,
+                Type = s.Type,
+                Status = new Status { Id = s.Status.Id, Title = s.Status.Title },
+            }).ToList();
+
+            return Ok(rms);
         }
 
         [HttpPost("AddNewRoom")]
@@ -51,6 +69,12 @@ namespace SanatoryApi.Controllers
             {
                 return BadRequest("Номер для сноса не найден!");
             }
+        }
+
+        [HttpPost("GetAllStatusesForRoom")]
+        public async Task<List<Status>> GetAllStatusesForRoom()
+        {
+            return new List<Status>(await db.Statuses.ToListAsync());
         }
     }
 }

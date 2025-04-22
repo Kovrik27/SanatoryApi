@@ -26,7 +26,7 @@ namespace SanatoryApi.Controllers
         {
             if (string.IsNullOrEmpty(user.Login) || string.IsNullOrEmpty(user.Password))
                 return BadRequest("Введите данные");
-            var check = db.Users.FirstOrDefault(s => s.Login == user.Login);
+            var check = db.Users.FirstOrDefault(s => s.Login == user.Login && s.Password == user.Password);
             if (check == null)
             {
                 db.Users.Add(user);
@@ -42,7 +42,7 @@ namespace SanatoryApi.Controllers
         {
             if(string.IsNullOrEmpty(user.Login) || string.IsNullOrEmpty (user.Password))
             {
-                return BadRequest("Введите данные");
+               return BadRequest("Введите данные");
             }
             var check = await db.Users.FirstOrDefaultAsync(u => u.Login == user.Login && u.Password == user.Password);
             if (check == null)
@@ -52,7 +52,7 @@ namespace SanatoryApi.Controllers
 
         }
 
-        [HttpDelete("DeleteUser")]
+        [HttpDelete("DeleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             var userTodelete = db.Users.FirstOrDefault(s => s.Id == id);
