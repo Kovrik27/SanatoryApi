@@ -15,6 +15,7 @@ namespace SanatoryApi.DoubleModels
         public int? CabinetId { get; set; }
         public int? Number {  get; set; } = null!;
         public int? WorkDaysId { get; set; }
+        public Day WorkDays { get; set; }
         public Cabinet Cabinet { get; set; }
         public JobTitle JobTitle { get; set; }
     }

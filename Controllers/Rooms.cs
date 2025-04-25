@@ -50,9 +50,18 @@ namespace SanatoryApi.Controllers
         [HttpPut("EditRoom")]
         public async Task<ActionResult> EditRoom(Room room)
         {
-            db.Rooms.Update(room);
+            var roomput = db.Rooms.FirstOrDefault(s => s.Id == room.Id);
+            if(roomput == null)
+            {
+                return BadRequest("Комната не найдена!");
+            }
+            roomput.Number = room.Number;
+            roomput.Price = room.Price;
+            roomput.Type = room.Type;
+            roomput.Status = room.Status;
             await db.SaveChangesAsync();
             return Ok("Данные номера успешно изменены!");
+
         }
 
         [HttpDelete("DeleteRoom/{id}")]
@@ -71,11 +80,13 @@ namespace SanatoryApi.Controllers
             }
         }
 
-        [HttpPost("GetAllStatusesForRoom")]
+        [HttpGet("GetAllStatusesForRoom")]
         public async Task<List<Status>> GetAllStatusesForRoom()
         {
             return new List<Status>(await db.Statuses.ToListAsync());
         }
+
+        
     }
 }
 

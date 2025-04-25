@@ -40,17 +40,32 @@ namespace SanatoryApi.Controllers
         [HttpDelete("GoOutGuest/{id}")]
         public async Task<ActionResult> GoOutGuest(int id)
         {
-            var guestToDelete = db.Guests.FirstOrDefault(s => s.Id == id);
-            if (guestToDelete != null)
+            var dirtyroom = db.Rooms.Include(r => r.Guests).Include(r => r.Status).FirstOrDefault(r => r.Id == id);
+            if (dirtyroom == null)
             {
-                db.Guests.Remove(guestToDelete);
-                await db.SaveChangesAsync();
-                return Ok("Гость успешно выселен!");
+                return BadRequest("Грязный номер не найден!");
             }
-            else
+            var guest = dirtyroom.Guests.FirstOrDefault();
+            if(guest == null)
             {
-                return BadRequest("Гость для выселения не найден!");
+                return BadRequest("Номер пустой");
             }
+            dirtyroom.Guests.Remove(guest);
+            guest.RoomId = 0;
+            db.Guests.Update(guest);
+            await db.SaveChangesAsync();
+              
+            var dirtystatus = db.Statuses.FirstOrDefault(s => s.Title == "Грязный");
+            dirtyroom.StatusId = dirtystatus.Id;
+            await db.SaveChangesAsync();
+
+            var problem = new Problem
+            {
+                Description = $"Помыть номер {dirtyroom.Number}"
+            };
+            db.Problems.Add(problem);
+            await db.SaveChangesAsync();
+            return Ok("Грязный номер");
         }
 
         //[HttpPost("AddNewProcedureOnGuest")]
