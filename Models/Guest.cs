@@ -16,20 +16,18 @@ public partial class Guest
     public string Pasport { get; set; } = null!;
 
     public string Policy { get; set; } = null!;
- 
+
     public DateOnly DataArrival { get; set; }
 
     public DateOnly DataOfDeparture { get; set; }
 
     public int RoomId { get; set; }
 
-    public int ProcedureId { get; set; }
-
     public int? UserId { get; set; }
-
-    public virtual Procedure Procedure { get; set; } = null!;
 
     public virtual Room Room { get; set; } = null!;
 
     public virtual User? User { get; set; }
+
+    public virtual ICollection<Procedure> Procedures { get; set; } = new List<Procedure>();
 }

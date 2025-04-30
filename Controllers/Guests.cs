@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SanatoryApi.DoubleModels;
 using SanatoryApi.Models;
 
 namespace SanatoryApi.Controllers
@@ -16,14 +17,32 @@ namespace SanatoryApi.Controllers
         }
 
         [HttpGet("GetAllGuests")]
-        public async Task<List<Guest>> GetAllGuests()
+        public async Task<ActionResult<List<Guest>>> GetAllGuests()
         {
-            return new List<Guest>(await db.Guests.ToListAsync());
+            var guests = await db.Guests.Include(s => s.Room).ToListAsync();
+
+            var gur = guests.Select(s => new GuestWithRoom
+            {
+                Id = s.Id,
+                Lastname = s.Lastname,
+                Name = s.Name,
+                Surname = s.Surname,
+                Pasport = s.Pasport,
+                Policy = s.Policy,
+                DataArrival = s.DataArrival,
+                DataOfDeparture = s.DataOfDeparture,
+                Room = new Room { Id = s.Room.Id, Number = s.Room.Number, Price = s.Room.Price, StatusId = s.Room.StatusId, Type = s.Room.Type, Status = s.Room.Status },
+            }).ToList();
+
+            return Ok(gur);
         }
 
         [HttpPost("AddNewGuest")]
         public async Task<ActionResult> AddNewGuest(Guest guest)
         {
+            guest.Room = null;
+            guest.Procedures = null;
+            guest.User = null;
             db.Guests.Add(guest);
             await db.SaveChangesAsync();
             return Ok("Новый гость успешно добавлен!");
@@ -52,7 +71,7 @@ namespace SanatoryApi.Controllers
             }
             dirtyroom.Guests.Remove(guest);
             guest.RoomId = 0;
-            db.Guests.Update(guest);
+            db.Guests.Remove(guest);
             await db.SaveChangesAsync();
               
             var dirtystatus = db.Statuses.FirstOrDefault(s => s.Title == "Грязный");

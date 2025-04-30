@@ -24,12 +24,16 @@ namespace SanatoryApi.DoubleModels
 
         public int? Number { get; set; } = null!;
 
-        public int? WorkDaysId { get; set; }
-
         public Problem? Problem { get; set; }
 
         public JobTitle JobTitle { get; set; }
 
-        public Day WorkDays { get; set; }    
+        public List<DayDTO> Days { get; set; } = new();
+    }
+
+    public class DayDTO
+    {
+        public int Id { get; set; }
+        public string Day1 { get; set; }
     }
 }

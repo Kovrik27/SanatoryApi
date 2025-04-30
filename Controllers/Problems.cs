@@ -24,15 +24,16 @@ namespace SanatoryApi.Controllers
         [HttpPost("AddNewProblem")]
         public async Task<ActionResult> AddNewProblem(Problem problem)
         {
+            problem.StatusProblem = null;
             db.Problems.Add(problem);
             await db.SaveChangesAsync();
             return Ok("Новая задача успешно добавлена!");
         }
 
         [HttpPut("EditProblem")]
-        public async Task<ActionResult> EditProblem(int id)
+        public async Task<ActionResult> EditProblem(Problem problem)
         {
-            var problemToEdit = db.Problems.FirstOrDefault(s => s.Id == id);
+            var problemToEdit = db.Problems.FirstOrDefault(s => s.Id == problem.Id);
             if(problemToEdit != null)
             {
                 db.Problems.Update(problemToEdit);
@@ -67,7 +68,7 @@ namespace SanatoryApi.Controllers
             var problemToeditstatus = db.Problems.FirstOrDefault(s => s.Id == problem.Id);
             if (problemToeditstatus != null)
             {
-                problemToeditstatus.StatusProblem = 2;
+                problemToeditstatus.StatusProblem.Id = 3;
                 return Ok("Задача успешно завершена!");
             }
             else

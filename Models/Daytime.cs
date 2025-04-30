@@ -11,5 +11,5 @@ public partial class Daytime
 
     public int EventId { get; set; }
 
-    public virtual Event Event { get; set; } = null!;
+    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
 }

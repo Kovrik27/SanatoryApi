@@ -23,8 +23,6 @@ public partial class Staff
 
     public int? CabinetId { get; set; }
 
-    public int? WorkDaysId { get; set; }
-
     public int? UserId { get; set; }
 
     public virtual Cabinet? Cabinet { get; set; }
@@ -35,5 +33,5 @@ public partial class Staff
 
     public virtual User? User { get; set; }
 
-    public virtual Day? WorkDays { get; set; }
+    public virtual ICollection<Day> Days { get; set; } = new List<Day>();
 }

@@ -99,10 +99,27 @@ public partial class SanatoryContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("EventID");
 
-            entity.HasOne(d => d.Event).WithMany(p => p.Daytimes)
-                .HasForeignKey(d => d.EventId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Daytime_Events_ID");
+            entity.HasMany(d => d.Events).WithMany(p => p.Days)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CrossDayEvent",
+                    r => r.HasOne<Event>().WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_CrossDayEvent_Events_ID"),
+                    l => l.HasOne<Daytime>().WithMany()
+                        .HasForeignKey("DayId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_CrossDayEvent_Daytime_ID"),
+                    j =>
+                    {
+                        j.HasKey("DayId", "EventId")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("CrossDayEvent");
+                        j.HasIndex(new[] { "EventId" }, "FK_CrossDayEvent_Events_ID");
+                        j.IndexerProperty<int>("DayId").HasColumnType("int(11)");
+                        j.IndexerProperty<int>("EventId").HasColumnType("int(11)");
+                    });
         });
 
         modelBuilder.Entity<Event>(entity =>
@@ -125,8 +142,6 @@ public partial class SanatoryContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.HasIndex(e => e.ProcedureId, "FK_Guests_Procedures_ID");
-
             entity.HasIndex(e => e.RoomId, "FK_Guests_Rooms_ID");
 
             entity.HasIndex(e => e.UserId, "FK_Guests_Users_Id");
@@ -146,10 +161,6 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Policy)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
-            entity.Property(e => e.ProcedureId)
-                .HasDefaultValueSql("'1'")
-                .HasColumnType("int(11)")
-                .HasColumnName("ProcedureID");
             entity.Property(e => e.RoomId)
                 .HasColumnType("int(11)")
                 .HasColumnName("RoomID");
@@ -157,11 +168,6 @@ public partial class SanatoryContext : DbContext
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
             entity.Property(e => e.UserId).HasColumnType("int(11)");
-
-            entity.HasOne(d => d.Procedure).WithMany(p => p.Guests)
-                .HasForeignKey(d => d.ProcedureId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Guests_Procedures_ID");
 
             entity.HasOne(d => d.Room).WithMany(p => p.Guests)
                 .HasForeignKey(d => d.RoomId)
@@ -171,6 +177,28 @@ public partial class SanatoryContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Guests)
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_Guests_Users_Id");
+
+            entity.HasMany(d => d.Procedures).WithMany(p => p.Guests)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CrossGuestProcedure",
+                    r => r.HasOne<Procedure>().WithMany()
+                        .HasForeignKey("ProcedureId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_CrossGuestProcedure_Procedures_ID"),
+                    l => l.HasOne<Guest>().WithMany()
+                        .HasForeignKey("GuestId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_CrossGuestProcedure_Guests_ID"),
+                    j =>
+                    {
+                        j.HasKey("GuestId", "ProcedureId")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("CrossGuestProcedure");
+                        j.HasIndex(new[] { "ProcedureId" }, "FK_CrossGuestProcedure_Procedures_ID");
+                        j.IndexerProperty<int>("GuestId").HasColumnType("int(11)");
+                        j.IndexerProperty<int>("ProcedureId").HasColumnType("int(11)");
+                    });
         });
 
         modelBuilder.Entity<JobTitle>(entity =>
@@ -189,7 +217,7 @@ public partial class SanatoryContext : DbContext
 
             entity.ToTable("Problem");
 
-            entity.HasIndex(e => e.StatusProblem, "FK_Problem_StatusProblem_Id");
+            entity.HasIndex(e => e.StatusProblemId, "FK_Problem_StatusProblem_Id");
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
@@ -200,12 +228,12 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Place)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
-            entity.Property(e => e.StatusProblem)
+            entity.Property(e => e.StatusProblemId)
                 .HasDefaultValueSql("'1'")
                 .HasColumnType("int(11)");
 
-            entity.HasOne(d => d.StatusProblemNavigation).WithMany(p => p.Problems)
-                .HasForeignKey(d => d.StatusProblem)
+            entity.HasOne(d => d.StatusProblem).WithMany(p => p.Problems)
+                .HasForeignKey(d => d.StatusProblemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Problem_StatusProblem_Id");
         });
@@ -265,8 +293,6 @@ public partial class SanatoryContext : DbContext
 
             entity.HasIndex(e => e.CabinetId, "FK_Staff_Cabinet_ID");
 
-            entity.HasIndex(e => e.WorkDaysId, "FK_Staff_Days_ID");
-
             entity.HasIndex(e => e.JobTitleId, "FK_Staff_JobTitle_Id");
 
             entity.HasIndex(e => e.ProblemId, "FK_Staff_Problem_ID");
@@ -298,8 +324,7 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Surname)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
-            entity.Property(e => e.UserId).HasColumnType("int(11)");
-            entity.Property(e => e.WorkDaysId).HasColumnType("int(11)");
+            entity.Property(e => e.UserId).HasColumnType("int(11)");            
 
             entity.HasOne(d => d.Cabinet).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.CabinetId)
@@ -318,9 +343,27 @@ public partial class SanatoryContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .HasConstraintName("FK_Staff_Users_Id");
 
-            entity.HasOne(d => d.WorkDays).WithMany(p => p.Staff)
-                .HasForeignKey(d => d.WorkDaysId)
-                .HasConstraintName("FK_Staff_Days_ID");
+            entity.HasMany(d => d.Days).WithMany(p => p.Staff)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CrossDayStaff",
+                    r => r.HasOne<Day>().WithMany()
+                        .HasForeignKey("DaysId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_CrossDayStaff_Days_ID"),
+                    l => l.HasOne<Staff>().WithMany()
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_CrossDayStaff_Staff_ID"),
+                    j =>
+                    {
+                        j.HasKey("StaffId", "DaysId")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("CrossDayStaff");
+                        j.HasIndex(new[] { "DaysId" }, "FK_CrossDayStaff_Days_ID");
+                        j.IndexerProperty<int>("StaffId").HasColumnType("int(11)");
+                        j.IndexerProperty<int>("DaysId").HasColumnType("int(11)");
+                    });
         });
 
         modelBuilder.Entity<Status>(entity =>
@@ -364,7 +407,6 @@ public partial class SanatoryContext : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Users_Role_Id");
         });
 
