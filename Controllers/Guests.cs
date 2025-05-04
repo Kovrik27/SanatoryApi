@@ -32,6 +32,11 @@ namespace SanatoryApi.Controllers
                 DataArrival = s.DataArrival,
                 DataOfDeparture = s.DataOfDeparture,
                 Room = new Room { Id = s.Room.Id, Number = s.Room.Number, Price = s.Room.Price, StatusId = s.Room.StatusId, Type = s.Room.Type, Status = s.Room.Status },
+                Procedures = s.Procedures.Select(p => new ProcedureDTO
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                }).ToList(),
             }).ToList();
 
             return Ok(gur);
@@ -88,6 +93,14 @@ namespace SanatoryApi.Controllers
         }
 
         //[HttpPost("AddNewProcedureOnGuest")]
-        //public async 
+        //public async class Task<ActionResult> AddNewProcedureOnGuest(GuestProcedureDTO guestProcedureDTO)
+        //{
+        //    var guest = await db.Guests.Include(s => s.Id == guestProcedureDTO.Id).FirstOrDefault(g => g.Id == guestProcedureDTO.GuestId);
+        //    var procedure = await db.Procedures.FirstOrDefault(p => p.Id == guestProcedureDTO.ProcedureId);
+
+        //    guest.Procedures.Add(procedure);
+        //    await db.SaveChangesAsync();
+        //    return Ok("Процедура успешно добавлена");
+        //}
     }
 }

@@ -23,5 +23,23 @@ namespace SanatoryApi.DoubleModels
         public int RoomId { get; set; }
 
         public virtual Room Room { get; set; } = null!;
+
+        public List<ProcedureDTO> Procedures = new();
+
     }
+
+    public class ProcedureDTO
+    {
+        public int Id { get; set; }
+
+        public string Title { get; set; } = null!;
+
+    }
+
+    public class GuestProcedureDTO
+    {
+        public int GuestId { get; set; }
+        public int ProcedureId { get; set; }
+    }
+      
 }

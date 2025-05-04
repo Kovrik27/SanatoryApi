@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SanatoryApi.DoubleModels;
 using SanatoryApi.Models;
 
 namespace SanatoryApi.Controllers
@@ -65,5 +66,22 @@ namespace SanatoryApi.Controllers
             else
                 return BadRequest("Юзер для удаления не найден!");
         }
+
+        //[HttpPost("AddUserOn")]
+        //public async Task<ActionResult> AddUserOn(ProblemOnStaff ProblemOnStaff)
+        //{
+        //    var staff = db.Staff.FirstOrDefault(s => s.Id == ProblemOnStaff.Id);
+        //    var problem = db.Problems.FirstOrDefault(s => s.Id == ProblemOnStaff.ProblemId);
+        //    if (staff != null && problem != null)
+        //    {
+        //        staff.ProblemId = problem.Id;
+        //        await db.SaveChangesAsync();
+        //        return Ok("Задача успешно присвоена сотруднику!");
+        //    }
+        //    else
+        //    {
+        //        return BadRequest("Сотрудник/Задача не найден(а)!");
+        //    }
+        //}
     }
 }
