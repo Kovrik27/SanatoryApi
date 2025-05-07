@@ -129,10 +129,11 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
+            entity.Property(e => e.Date).HasMaxLength(255);
+            entity.Property(e => e.Duration).HasColumnType("int(11)");
             entity.Property(e => e.Place)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
-            entity.Property(e => e.Times).HasColumnType("int(11)");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
@@ -218,6 +219,7 @@ public partial class SanatoryContext : DbContext
             entity.ToTable("Problem");
 
             entity.HasIndex(e => e.StatusProblemId, "FK_Problem_StatusProblem_Id");
+            entity.HasIndex(e => e.StaffId, "FK_Problem_Staff_ID");
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
@@ -231,11 +233,19 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.StatusProblemId)
                 .HasDefaultValueSql("'1'")
                 .HasColumnType("int(11)");
+            entity.Property(e => e.StaffId)
+               .HasColumnType("int(11)");
 
             entity.HasOne(d => d.StatusProblem).WithMany(p => p.Problems)
                 .HasForeignKey(d => d.StatusProblemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Problem_StatusProblem_Id");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.Problems)
+               .HasForeignKey(d => d.StaffId)
+               .OnDelete(DeleteBehavior.ClientSetNull)
+               .HasConstraintName("FK_Problem_Staff_ID");
+
         });
 
         modelBuilder.Entity<Procedure>(entity =>
@@ -245,6 +255,7 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
+            entity.Property(e => e.Date).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.Duration).HasColumnType("int(11)");
             entity.Property(e => e.Price).HasPrecision(19, 2);
@@ -295,8 +306,6 @@ public partial class SanatoryContext : DbContext
 
             entity.HasIndex(e => e.JobTitleId, "FK_Staff_JobTitle_Id");
 
-            entity.HasIndex(e => e.ProblemId, "FK_Staff_Problem_ID");
-
             entity.HasIndex(e => e.UserId, "FK_Staff_Users_Id");
 
             entity.Property(e => e.Id)
@@ -318,13 +327,10 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
-            entity.Property(e => e.ProblemId)
-                .HasColumnType("int(11)")
-                .HasColumnName("ProblemID");
             entity.Property(e => e.Surname)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
-            entity.Property(e => e.UserId).HasColumnType("int(11)");            
+            entity.Property(e => e.UserId).HasColumnType("int(11)");
 
             entity.HasOne(d => d.Cabinet).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.CabinetId)
@@ -334,10 +340,6 @@ public partial class SanatoryContext : DbContext
                 .HasForeignKey(d => d.JobTitleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Staff_JobTitle_Id");
-
-            entity.HasOne(d => d.Problem).WithMany(p => p.Staff)
-                .HasForeignKey(d => d.ProblemId)
-                .HasConstraintName("FK_Staff_Problem_ID");
 
             entity.HasOne(d => d.User).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.UserId)

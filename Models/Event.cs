@@ -9,9 +9,11 @@ public partial class Event
 
     public string Title { get; set; } = null!;
 
-    public int Times { get; set; }
+    public int Duration { get; set; }
 
     public string Place { get; set; } = null!;
+
+    public string? Date { get; set; }
 
     public virtual ICollection<Daytime> Days { get; set; } = new List<Daytime>();
 }

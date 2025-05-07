@@ -15,5 +15,7 @@ public partial class Procedure
 
     public decimal Price { get; set; }
 
+    public DateTime? Date { get; set; }
+
     public virtual ICollection<Guest> Guests { get; set; } = new List<Guest>();
 }

@@ -18,7 +18,13 @@ namespace SanatoryApi.Controllers
         [HttpGet("GetAllProblems")]
         public async Task<List<Problem>> GetAllGuests()
         {
-            return new List<Problem>(await db.Problems.ToListAsync());
+            return await db.Problems.ToListAsync();
+        }
+
+        [HttpGet("GetProblemsByStaff/{id}")]
+        public async Task<List<Problem>> GetProblemsByStaff(int id)
+        {
+            return await db.Problems.Where(s=>s.StaffId==id).ToListAsync();
         }
 
         [HttpPost("AddNewProblem")]

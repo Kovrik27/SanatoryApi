@@ -19,8 +19,6 @@ public partial class Staff
 
     public string Mail { get; set; } = null!;
 
-    public int? ProblemId { get; set; }
-
     public int? CabinetId { get; set; }
 
     public int? UserId { get; set; }
@@ -29,7 +27,7 @@ public partial class Staff
 
     public virtual JobTitle JobTitle { get; set; } = null!;
 
-    public virtual Problem? Problem { get; set; }
+    public virtual ICollection<Problem>? Problems { get; set; } = new List<Problem>();
 
     public virtual User? User { get; set; }
 

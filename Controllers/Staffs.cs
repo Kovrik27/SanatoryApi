@@ -29,7 +29,7 @@ namespace SanatoryApi.Controllers
         {
             var staffs = await db.Staff.Include(s => s.Cabinet).Include(s => s.JobTitle).Include(s=> s.Days).Where(s=>s.JobTitle.Title.Contains("Врач")).ToListAsync();
 
-            var stc = staffs.Select(s => new CabinetOnStaff
+            var stc = staffs.Select(s => new CabinetWithStaff
             {
                 Id = s.Id,
                 Lastname = s.Lastname,
@@ -42,7 +42,7 @@ namespace SanatoryApi.Controllers
                 Number = s.Cabinet?.Number,
                 Cabinet = new Cabinet { Id = s.Cabinet.Id, Number = s.Cabinet.Number },
                 JobTitle = new JobTitle { Id = s.JobTitle.Id, Title = s.JobTitle.Title },
-                WorkDays = s.Days.Select(d => new CabinetOnStaff.DayDTO2
+                WorkDays = s.Days.Select(d => new CabinetWithStaff.DayDTO2
                 {
                     Id = d.Id,
                     Day1 = d.Day1,
@@ -55,9 +55,9 @@ namespace SanatoryApi.Controllers
         [HttpGet("GetStaffWithProblem")]
         public async Task<ActionResult<List<Staff>>> GetStaffWithProblem()
         {
-            var staffs = await db.Staff.Include(s => s.Problem).Include(s => s.JobTitle).Include(s => s.Days).Where(s => ! s.JobTitle.Title.Contains("Врач")).ToListAsync();
+            var staffs = await db.Staff.Include(s=>s.Problems).Include(s => s.JobTitle).Include(s => s.Days).Where(s => ! s.JobTitle.Title.Contains("Врач")).ToListAsync();
 
-            var stp = staffs.Select(s => new ProblemOnStaff
+            var stp = staffs.Select(s => new ProblemWithStaff
             {
                 Id = s.Id,
                 Lastname = s.Lastname,
@@ -66,9 +66,7 @@ namespace SanatoryApi.Controllers
                 JobTitleId = s.JobTitleId,
                 Mail = s.Mail,
                 Phone = s.Phone,
-                ProblemId = s.Problem?.Id,
-                Description = s.Problem?.Description,
-                Problem = new Problem { Id = s.Problem.Id, Description = s.Problem.Description, Place = s.Problem.Place },             
+                Problems = s.Problems.Select(s=>new Models.Problem { Id = s.Id, Description = s.Description, Place = s.Place }).ToList(),
                 JobTitle = new JobTitle { Id = s.JobTitle.Id, Title = s.JobTitle.Title },
                 Days = s.Days.Select(d => new DayDTO
                  {
@@ -83,13 +81,13 @@ namespace SanatoryApi.Controllers
         [HttpGet("GetStaffId/{id}")]
         public async Task<ActionResult<Staff>> GetStaffId(int id)
         {
-            var staff = await db.Staff.Include(s => s.Problem).Include(s => s.JobTitle)/*.Include(s => s.Days)*/.FirstOrDefaultAsync(s => s.Id == id);
+            var staff = await db.Staff.Include(s => s.Problems).Include(s => s.JobTitle).Include(s => s.Days).FirstOrDefaultAsync(s => s.Id == id);
 
             if (staff == null)
             {
                 return NotFound(); 
             }
-            var staffid = new ProblemOnStaff
+            var staffid = new ProblemWithStaff
             {
                 Id = staff.Id,
                 Lastname = staff.Lastname,
@@ -98,11 +96,13 @@ namespace SanatoryApi.Controllers
                 JobTitleId = staff.JobTitleId,
                 Mail = staff.Mail,
                 Phone = staff.Phone,
-                ProblemId = staff.Problem?.Id,
-                Description = staff.Problem?.Description,
-                Problem = new Problem { Id = staff.Problem.Id, Description = staff.Problem.Description, Place = staff.Problem.Place },
-                //WorkDays = new Day { Id = staff.WorkDays.Id, Day1 = staff.WorkDays.Day1 },
-                JobTitle = new JobTitle { Id = staff.JobTitle.Id, Title = staff.JobTitle.Title }
+                Problems = staff.Problems.Select(s => new Models.Problem { Id = s.Id, Description = s.Description, Place = s.Place }).ToList(),
+                JobTitle = new JobTitle { Id = staff.JobTitle.Id, Title = staff.JobTitle.Title },
+                Days = staff.Days.Select(d => new DayDTO
+                {
+                    Id = d.Id,
+                    Day1 = d.Day1,
+                }).ToList()
             };
 
             return Ok(staffid); 
@@ -114,6 +114,9 @@ namespace SanatoryApi.Controllers
         {
             try
             {
+                staff.JobTitleId = staff.JobTitle.Id;
+                staff.JobTitle = null;
+                staff.Days = null;
                 db.Staff.Add(staff);
             }
             catch (Exception ex)
@@ -135,8 +138,13 @@ namespace SanatoryApi.Controllers
         [HttpDelete("GoOutStaff/{id}")]
         public async Task<ActionResult> GoOutStaff(int id)
         {
+            bool checkProblems = db.Problems.Any(s => s.StaffId == id && s.StatusProblemId != 3);
+            if (checkProblems)
+            {
+                return BadRequest("Пусть доделает свою работу и валит потом");
+            }
             var staffToDelete = db.Staff.FirstOrDefault(s => s.Id == id);
-            if (staffToDelete != null && staffToDelete.CabinetId == null && staffToDelete.ProblemId == null)
+            if (staffToDelete != null && staffToDelete.CabinetId == null)
             {
                 db.Staff.Remove(staffToDelete);
                 await db.SaveChangesAsync();
@@ -152,11 +160,11 @@ namespace SanatoryApi.Controllers
         [HttpPost("AddProblemOnStaff")]
         public async Task<ActionResult> AddProblemOnStaff(ProblemOnStaff ProblemOnStaff)
         {
-            var staff = db.Staff.FirstOrDefault(s => s.Id == ProblemOnStaff.Id);
+            var staff = db.Staff.FirstOrDefault(s => s.Id == ProblemOnStaff.StaffId);
             var problem = db.Problems.FirstOrDefault(s => s.Id == ProblemOnStaff.ProblemId);
             if(staff != null && problem != null)
             {
-                staff.ProblemId = problem.Id;
+                problem.StaffId = staff.Id;
                 await db.SaveChangesAsync();
                 return Ok("Задача успешно присвоена сотруднику!");
             }
@@ -166,7 +174,7 @@ namespace SanatoryApi.Controllers
             }
         }
 
-        public ObservableCollection<CabinetOnStaff> cabinetOnStaff = new ();
+        public ObservableCollection<CabinetWithStaff> cabinetOnStaff = new ();
 
         [HttpPost("AddCabinetOnStaff")]
         public async Task<ActionResult> AddCabinetOnStass(CabinetOnStaff CabinetOnStaff)
@@ -200,13 +208,13 @@ namespace SanatoryApi.Controllers
                 return BadRequest("Сотрудник не найден!");
             }
         }
-        [HttpPut("DoneProblem/{id}")]
-        public async Task<ActionResult> DoneProblem(int id)
+        [HttpPut("DoneProblem/{idProblem}")]
+        public async Task<ActionResult> DoneProblem(int idProblem)
         {
-            var staff = db.Staff.FirstOrDefault(s => s.Id == id);
-            if (staff != null)
+            var problem = db.Problems.FirstOrDefault(s => s.Id == idProblem);
+            if (problem != null)
             {
-                staff.ProblemId = 1;
+                problem.StatusProblemId = 3;
                 await db.SaveChangesAsync();
                 return Ok("Задача успешно выполнена!");
             }
