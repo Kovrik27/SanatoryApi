@@ -16,11 +16,6 @@ namespace SanatoryApi.Controllers
             this.db = db;
         }
 
-        //[HttpGet("GetAllRooms")]
-        //public async Task<List<Room>> GetAllRooms()
-        //{
-        //    return new List<Room>(await db.Rooms.ToListAsync());
-        //}
 
         [HttpGet("GetRoomWithStatus")]
         public async Task<ActionResult<List<Room>>> GetRoomWithStatus()
@@ -37,14 +32,6 @@ namespace SanatoryApi.Controllers
             }).ToList();
 
             return Ok(rms);
-        }
-
-        [HttpPost("AddNewRoom")]
-        public async Task<ActionResult> AddNewRoom(Room room)
-        {
-            db.Rooms.Add(room);
-            await db.SaveChangesAsync();
-            return Ok("Новый номер успешно добавлен!");
         }
 
         [HttpPut("EditRoom")]
@@ -64,21 +51,21 @@ namespace SanatoryApi.Controllers
 
         }
 
-        [HttpDelete("DeleteRoom/{id}")]
-        public async Task<ActionResult> DeleteRoom(int id)
+        [HttpPut("EditStatusRoom")]
+        public async Task<ActionResult> EditRoom(Room room)
         {
-            var roomToDelete = db.Rooms.FirstOrDefault(s => s.Id == id);
-            if (roomToDelete != null)
+            var roomput = db.Rooms.FirstOrDefault(s => s.Id == room.Id);
+            if (roomput == null)
             {
-                db.Rooms.Remove(roomToDelete);
-                await db.SaveChangesAsync();
-                return Ok("Номер успешно снесён!");
+                return BadRequest("Комната не найдена!");
             }
-            else
-            {
-                return BadRequest("Номер для сноса не найден!");
-            }
+
+            roomput.Status.Id = 2;
+            await db.SaveChangesAsync();
+            return Ok("Номер успешно занят!");
+
         }
+
 
         [HttpGet("GetAllStatusesForRoom")]
         public async Task<List<Status>> GetAllStatusesForRoom()

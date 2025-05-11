@@ -67,21 +67,48 @@ namespace SanatoryApi.Controllers
                 return BadRequest("Юзер для удаления не найден!");
         }
 
-        //[HttpPost("AddUserOn")]
-        //public async Task<ActionResult> AddUserOn(ProblemOnStaff ProblemOnStaff)
-        //{
-        //    var staff = db.Staff.FirstOrDefault(s => s.Id == ProblemOnStaff.Id);
-        //    var problem = db.Problems.FirstOrDefault(s => s.Id == ProblemOnStaff.ProblemId);
-        //    if (staff != null && problem != null)
-        //    {
-        //        staff.ProblemId = problem.Id;
-        //        await db.SaveChangesAsync();
-        //        return Ok("Задача успешно присвоена сотруднику!");
-        //    }
-        //    else
-        //    {
-        //        return BadRequest("Сотрудник/Задача не найден(а)!");
-        //    }
-        //}
+        [HttpGet("GetAllRoleUser")]
+        public async Task<List<Role>> GetAllRoleUser()
+        {
+            return new List<Role>(await db.Roles.ToListAsync());
+        }
+
+
+        [HttpPost("AddUserOn")]
+        public async Task<ActionResult> AddUserOn(UserOn UserOn)
+        {
+            var staff = db.Staff.FirstOrDefault(s => s.Id == UserOn.StaffId).Where(s => !staff.JobTitle.Title.Contains("Врач"));
+            var user = db.Users.FirstOrDefault(s => s.Id == UserOn.UserId);
+
+            if (staff == null)
+            {
+                var doctor = db.Staff.FirstOrDefault(s => s.Id == UserOn.DoctorId).Where(s => doctor.JobTitle.Title.Contains("Врач"));
+
+                if(doctor == null)
+                {
+                    var guest = db.Guests.FirstOrDefault(s => s.Id == UserOn.GuestId);
+                    if(guest == null)
+                    {
+                        return BadRequest("Никого не нашёл:(");
+                    }
+                    guest.UserId = user.Id;
+                    await db.SaveChangesAsync();
+                    return Ok("Пользователь успешно назначен гостю!");
+                }
+                else 
+                {
+                    doctor.UserId = user.Id;
+                    await db.SaveChangesAsync();
+                    return Ok("Пользователь успешно назначен врачу");
+                }        
+            }
+            else
+            {
+                staff.UserId = user.Id;
+                await db.SaveChangesAsync();
+                return Ok("Пользователь успешно назначен тех.персоналу");
+            }
+        }
     }
+    
 }

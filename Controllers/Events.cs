@@ -17,65 +17,56 @@ namespace SanatoryApi.Controllers
             this.db = db;
         }
 
-        private static List<EventOnDay> eventsOnDays = new();
-
-
-        [HttpGet("GetAllEventsOnDay")]
-        public ActionResult<EventOnDay> GetAllEventsOnDay()
+        [HttpGet("GetAllEvents")]
+        public async ActionResult<Events> GetAllEvents()
         {
-            return Ok(eventsOnDays);
+            return await db.Events.ToListAsync();
         }
 
-        [HttpPost("AddNewEventOnDay")]
-        public async Task<ActionResult> AddNewEventOnDay(DateOnly date, Event newEvent)
+
+        [HttpGet("GetAllDaysWithEvents")]
+        public async ActionResult<DaysWithEvents> GetAllDaysWithEvents()
         {
-            var day = eventsOnDays.FirstOrDefault(d => d.Day == date);
-            if (day == null)
+            var days = await db.Daytimes.Include(s => s.Events).ToListAsync();
+
+            var dev = days.Select(s => new DaysWithEvents
             {
-                day = new EventOnDay { Day = date };
-                eventsOnDays.Add(day);
-            }
-            newEvent.Id = day.Events.Max(e => e.Id) + 1;
-            day.Events.Add(newEvent);
-            await db.SaveChangesAsync();
-            return Ok("Мероприятие на день успешно добавлено!");
+                Id = s.Id,
+                Time = s.Time,
+                Events = s.Events.Select(s=> new Event { Id = s.Id, Title = s.Title, Date = s.Date, Duration = s.Duration, Place = s.Place })
+            });
         }
 
-        //[HttpPut("EditEventOnDay")]
-        //public async ActionResult<Event> EditEventOnDay(DateOnly date, int EventId)
+        //[HttpPost("AddNewEventOnDay")]
+        //public async Task<ActionResult> AddNewEventOnDay(DateOnly date, Event newEvent)
         //{
         //    var day = eventsOnDays.FirstOrDefault(d => d.Day == date);
         //    if (day == null)
-        //        return BadRequest("На этот день нет мероприятий, чтобы их изменять");
-
+        //    {
+        //        day = new EventOnDay { Day = date };
+        //        eventsOnDays.Add(day);
+        //    }
+        //    newEvent.Id = day.Events.Max(e => e.Id) + 1;
+        //    day.Events.Add(newEvent);
+        //    await db.SaveChangesAsync();
+        //    return Ok("Мероприятие на день успешно добавлено!");
         //}
 
-        //[HttpDelete("DeleteEventOnDay/{id}")]
-        //public async Task<ActionResult> DeleteEventOnDay(DateOnly date, int EventId)
-        //{
-        //    var day = eventsOnDays.FirstOrDefault(d => d.Day == date);
-        //    if (day == null)
-        //    return BadRequest("На этот день нет мероприятий, чтобы их удалять, ты чо слепой");
-        //    else
-        //    {
-                
-        //    }
-        //}   
 
-        //[HttpDelete("DeleteEvent/{id}")]
-        //public async Task<ActionResult> DeleteEvent(int id)
-        //{
-        //    var eventToDelete = db.Events.FirstOrDefault(s => s.Id == id);
-        //    if (eventToDelete != null)
-        //    {
-        //        db.Events.Remove(eventToDelete);
-        //        await db.SaveChangesAsync();
-        //        return Ok("Мероприятие успешно удалено/завершено!");
-        //    }
-        //    else
-        //    {
-        //        return BadRequest("Мероприятие для удаления/завершения не найдено!");
-        //    }
-        //}
+        [HttpDelete("DeleteEvent/{id}")]
+        public async Task<ActionResult> DeleteEvent(int id)
+        {
+            var eventToDelete = db.Events.FirstOrDefault(s => s.Id == id);
+            if (eventToDelete != null)
+            {
+                db.Events.Remove(eventToDelete);
+                await db.SaveChangesAsync();
+                return Ok("Мероприятие успешно завершено!");
+            }
+            else
+            {
+                return BadRequest("Мероприятие для завершения не найдено!");
+            }
+        }
     }
 }

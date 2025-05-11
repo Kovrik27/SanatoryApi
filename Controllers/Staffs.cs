@@ -1,4 +1,4 @@
-﻿ using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SanatoryApi.DoubleModels;
@@ -146,7 +146,7 @@ namespace SanatoryApi.Controllers
             var staffToDelete = db.Staff.FirstOrDefault(s => s.Id == id);
             if (staffToDelete != null && staffToDelete.CabinetId == null)
             {
-                db.Staff.Remove(staffToDelete);
+                //db.Staff.Remove(staffToDelete);
                 await db.SaveChangesAsync();
                 return Ok("Работник успешно уволен!");
             }

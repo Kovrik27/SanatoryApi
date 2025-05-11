@@ -76,7 +76,7 @@ namespace SanatoryApi.Controllers
             }
             dirtyroom.Guests.Remove(guest);
             guest.RoomId = 0;
-            db.Guests.Remove(guest);
+            //db.Guests.Remove(guest);
             await db.SaveChangesAsync();
               
             var dirtystatus = db.Statuses.FirstOrDefault(s => s.Title == "Грязный");

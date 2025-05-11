@@ -35,21 +35,5 @@ namespace SanatoryApi.Controllers
             await db.SaveChangesAsync();
             return Ok("Данные кабинета успешно изменены!");
         }
-
-        [HttpDelete("DeleteCabinet/{id}")]
-        public async Task<ActionResult> DeleteCabinet(int id)
-        {
-            var cabinetToDelete = db.Cabinets.FirstOrDefault(s => s.Id == id);
-            if (cabinetToDelete != null)
-            {
-                db.Cabinets.Remove(cabinetToDelete);
-                await db.SaveChangesAsync();
-                return Ok("Кабинет успешно снесён!");
-            }
-            else
-            {
-                return BadRequest("Кабинет для сноса не найден!");
-            }
-        }
     }
 }
