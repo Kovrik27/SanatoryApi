@@ -52,7 +52,7 @@ namespace SanatoryApi.Controllers
         }
 
         [HttpPut("EditStatusRoom")]
-        public async Task<ActionResult> EditRoom(Room room)
+        public async Task<ActionResult> EditRoomStatus(Room room)
         {
             var roomput = db.Rooms.FirstOrDefault(s => s.Id == room.Id);
             if (roomput == null)
@@ -60,7 +60,7 @@ namespace SanatoryApi.Controllers
                 return BadRequest("Комната не найдена!");
             }
 
-            roomput.Status.Id = 2;
+            roomput.StatusId = 2;
             await db.SaveChangesAsync();
             return Ok("Номер успешно занят!");
 

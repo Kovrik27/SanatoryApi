@@ -16,9 +16,9 @@ namespace SanatoryApi.DoubleModels
 
         public string Policy { get; set; } = null!;
 
-        public DateOnly DataArrival { get; set; }
+        public DateTime DataArrival { get; set; }
 
-        public DateOnly DataOfDeparture { get; set; }
+        public DateTime DataOfDeparture { get; set; }
 
         public int RoomId { get; set; }
 

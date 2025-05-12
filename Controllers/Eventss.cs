@@ -9,23 +9,23 @@ namespace SanatoryApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Events : ControllerBase
+    public class Eventss : ControllerBase
     {
         readonly SanatoryContext db;
-        public Events(SanatoryContext db)
+        public Eventss(SanatoryContext db)
         {
             this.db = db;
         }
 
         [HttpGet("GetAllEvents")]
-        public async ActionResult<Events> GetAllEvents()
+        public async Task<ActionResult<Event>> GetAllEvents()
         {
-            return await db.Events.ToListAsync();
+            return Ok(await db.Events.ToListAsync());
         }
 
 
         [HttpGet("GetAllDaysWithEvents")]
-        public async ActionResult<DaysWithEvents> GetAllDaysWithEvents()
+        public async Task<ActionResult<DaysWithEvents>> GetAllDaysWithEvents()
         {
             var days = await db.Daytimes.Include(s => s.Events).ToListAsync();
 
@@ -33,8 +33,10 @@ namespace SanatoryApi.Controllers
             {
                 Id = s.Id,
                 Time = s.Time,
-                Events = s.Events.Select(s=> new Event { Id = s.Id, Title = s.Title, Date = s.Date, Duration = s.Duration, Place = s.Place })
+                Events = s.Events.Select(s=> new Models.Event { Id = s.Id, Title = s.Title, Date = s.Date, Duration = s.Duration, Place = s.Place }).ToList(),
             });
+
+            return Ok(dev);
         }
 
         //[HttpPost("AddNewEventOnDay")]

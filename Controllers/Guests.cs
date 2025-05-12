@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SanatoryApi.DoubleModels;
 using SanatoryApi.Models;
+using System.Runtime.InteropServices;
 
 namespace SanatoryApi.Controllers
 {
@@ -76,7 +77,7 @@ namespace SanatoryApi.Controllers
             }
             dirtyroom.Guests.Remove(guest);
             guest.RoomId = 0;
-            //db.Guests.Remove(guest);
+            db.Guests.Remove(guest);
             await db.SaveChangesAsync();
               
             var dirtystatus = db.Statuses.FirstOrDefault(s => s.Title == "Грязный");
@@ -92,15 +93,16 @@ namespace SanatoryApi.Controllers
             return Ok("Грязный номер");
         }
 
-        //[HttpPost("AddNewProcedureOnGuest")]
-        //public async class Task<ActionResult> AddNewProcedureOnGuest(GuestProcedureDTO guestProcedureDTO)
-        //{
-        //    var guest = await db.Guests.Include(s => s.Id == guestProcedureDTO.Id).FirstOrDefault(g => g.Id == guestProcedureDTO.GuestId);
-        //    var procedure = await db.Procedures.FirstOrDefault(p => p.Id == guestProcedureDTO.ProcedureId);
+        [HttpPost("AddProcedureOnGuest")]
+        public async Task<ActionResult> AddProcedureOnGuest(GuestProcedureDTO guestProcedureDTO)
+        {
+            var guest = db.Guests.FirstOrDefault(s=> s.Id == guestProcedureDTO.GuestId);
+            var procedure = db.Procedures.FirstOrDefault(p => p.Id == guestProcedureDTO.ProcedureId);
 
-        //    guest.Procedures.Add(procedure);
-        //    await db.SaveChangesAsync();
-        //    return Ok("Процедура успешно добавлена");
-        //}
+            guest.Procedures.Add(procedure);
+            await db.SaveChangesAsync();
+            return Ok("Процедура успешно добавлена");
+        }
+
     }
 }

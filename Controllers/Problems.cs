@@ -39,17 +39,9 @@ namespace SanatoryApi.Controllers
         [HttpPut("EditProblem")]
         public async Task<ActionResult> EditProblem(Problem problem)
         {
-            var problemToEdit = db.Problems.FirstOrDefault(s => s.Id == problem.Id);
-            if(problemToEdit != null)
-            {
-                db.Problems.Update(problemToEdit);
+                db.Problems.Update(problem);
                 await db.SaveChangesAsync();
                 return Ok("Данные задачи успешно изменены!");
-            }
-           else
-            {
-                return BadRequest("Ошибка! Задача для изменения не найдена!");
-            }
         }
 
         [HttpDelete("DeleteProblem/{id}")]

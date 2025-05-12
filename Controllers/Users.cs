@@ -74,41 +74,41 @@ namespace SanatoryApi.Controllers
         }
 
 
-        [HttpPost("AddUserOn")]
-        public async Task<ActionResult> AddUserOn(UserOn UserOn)
-        {
-            var staff = db.Staff.FirstOrDefault(s => s.Id == UserOn.StaffId).Where(s => !staff.JobTitle.Title.Contains("Врач"));
-            var user = db.Users.FirstOrDefault(s => s.Id == UserOn.UserId);
+        //[HttpPost("AddUserOn")]
+        //public async Task<ActionResult> AddUserOn(UserOn UserOn)
+        //{
+        //    //var staff = await db.Staff.FirstOrDefault(s=> s.Id == UserOn.StaffId).Include(s => s.JobTitle).Where(s => !s.JobTitle.Title.Contains("Врач"));
+        //    var user = db.Users.FirstOrDefault(s => s.Id == UserOn.UserId);
 
-            if (staff == null)
-            {
-                var doctor = db.Staff.FirstOrDefault(s => s.Id == UserOn.DoctorId).Where(s => doctor.JobTitle.Title.Contains("Врач"));
+        //    if (staff == null)
+        //    {
+        //        var doctor = await db.Staff.Include(s => s.JobTitle).Where(s => s.JobTitle.Title.Contains("Врач")).ToListAsync(); ;
 
-                if(doctor == null)
-                {
-                    var guest = db.Guests.FirstOrDefault(s => s.Id == UserOn.GuestId);
-                    if(guest == null)
-                    {
-                        return BadRequest("Никого не нашёл:(");
-                    }
-                    guest.UserId = user.Id;
-                    await db.SaveChangesAsync();
-                    return Ok("Пользователь успешно назначен гостю!");
-                }
-                else 
-                {
-                    doctor.UserId = user.Id;
-                    await db.SaveChangesAsync();
-                    return Ok("Пользователь успешно назначен врачу");
-                }        
-            }
-            else
-            {
-                staff.UserId = user.Id;
-                await db.SaveChangesAsync();
-                return Ok("Пользователь успешно назначен тех.персоналу");
-            }
-        }
+        //        if (doctor == null)
+        //        {
+        //            var guest = db.Guests.FirstOrDefault(s => s.Id == UserOn.GuestId);
+        //            if (guest == null)
+        //            {
+        //                return BadRequest("Никого не нашёл:(");
+        //            }
+        //            guest.UserId = user.Id;
+        //            await db.SaveChangesAsync();
+        //            return Ok("Пользователь успешно назначен гостю!");
+        //        }
+        //        else
+        //        {
+        //            //doctor.UserId = user.Id;
+        //            await db.SaveChangesAsync();
+        //            return Ok("Пользователь успешно назначен врачу");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        //staff.UserId = user.Id;
+        //        await db.SaveChangesAsync();
+        //        return Ok("Пользователь успешно назначен тех.персоналу");
+        //    }
+        //}
     }
     
 }

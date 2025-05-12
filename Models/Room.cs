@@ -17,5 +17,5 @@ public partial class Room
 
     public virtual ICollection<Guest> Guests { get; set; } = new List<Guest>();
 
-    public virtual Status Status { get; set; } = null!;
+    public virtual Status? Status { get; set; } = null!;
 }
