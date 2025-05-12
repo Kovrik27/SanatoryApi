@@ -53,5 +53,19 @@ namespace SanatoryApi.Controllers
                 return BadRequest("День для удаления не найден!");
             }
         }
+
+        [HttpGet($"GetEventByDate/{date}")]
+        public async Task<ActionResult<Event>> GetEventsByDate(DateTime date)
+        {
+            var filteredEvents = await _context.Events
+                .Where(e => e.Date.Date == date.Date)
+                .ToListAsync();
+
+            if (!filteredEvents.Any())
+            {
+                return NotFound(); 
+            }
+            return Ok(filteredEvents);
+        }
     }
 }
