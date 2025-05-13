@@ -89,15 +89,10 @@ public partial class SanatoryContext : DbContext
 
             entity.ToTable("Daytime");
 
-            entity.HasIndex(e => e.EventId, "FK_Daytime_Events_ID");
-
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
-            entity.Property(e => e.EventId)
-                .HasDefaultValueSql("'1'")
-                .HasColumnType("int(11)")
-                .HasColumnName("EventID");
+
 
             entity.HasMany(d => d.Events).WithMany(p => p.Days)
                 .UsingEntity<Dictionary<string, object>>(

@@ -40,9 +40,9 @@ namespace SanatoryApi.Controllers
         }
 
         //[HttpPost("AddNewEventOnDay")]
-        //public async Task<ActionResult> AddNewEventOnDay(DateOnly date, Event newEvent)
+        //public async Task<ActionResult> AddNewEventOnDay(EventOnDay eventOnDay)
         //{
-        //    var day = eventsOnDays.FirstOrDefault(d => d.Day == date);
+        //    var day = db.Daytimes.FirstOrDefault(d => d.Time == date);
         //    if (day == null)
         //    {
         //        day = new EventOnDay { Day = date };

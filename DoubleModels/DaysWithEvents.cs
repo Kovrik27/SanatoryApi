@@ -8,8 +8,7 @@ namespace SanatoryApi.DoubleModels
 
         public DateTime Time { get; set; }
 
-        public int EventId { get; set; }
+        public virtual List<Event> Events { get; set; }
 
-        public virtual List<Event> Events { get; set; } = new();
     }
 }

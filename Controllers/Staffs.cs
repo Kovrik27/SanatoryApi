@@ -81,7 +81,7 @@ namespace SanatoryApi.Controllers
         [HttpGet("GetStaffId/{id}")]
         public async Task<ActionResult<Staff>> GetStaffId(int id)
         {
-            var staff = await db.Staff.Include(s => s.Problems).Include(s => s.JobTitle).Include(s => s.Days).FirstOrDefaultAsync(s => s.Id == id);
+            var staff = await db.Staff.Include(s => s.Problems).Include(s => s.JobTitle).Include(s => s.Days).FirstOrDefaultAsync(s => s.UserId == id);
 
             if (staff == null)
             {
@@ -117,6 +117,7 @@ namespace SanatoryApi.Controllers
                 staff.JobTitleId = staff.JobTitle.Id;
                 staff.JobTitle = null;
                 staff.Days = null;
+                staff.Problems.Add(new Models.Problem { Id = 1 });
                 db.Staff.Add(staff);
             }
             catch (Exception ex)
@@ -144,9 +145,9 @@ namespace SanatoryApi.Controllers
                 return BadRequest("Пусть доделает свою работу и валит потом");
             }
             var staffToDelete = db.Staff.FirstOrDefault(s => s.Id == id);
-            if (staffToDelete != null && staffToDelete.CabinetId == null)
+            if (staffToDelete != null && staffToDelete.CabinetId == 1)
             {
-                //db.Staff.Remove(staffToDelete);
+                staffToDelete.JobTitleId = 40;
                 await db.SaveChangesAsync();
                 return Ok("Работник успешно уволен!");
             }

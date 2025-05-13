@@ -43,7 +43,7 @@ namespace SanatoryApi.Controllers
             return Ok(gur);
         }
 
-        [HttpGet($"GetProceduresByGuest/{id}")]
+        [HttpGet("GetProceduresByGuest/{id}")]
         public async Task<List<Procedure>> GetProceduresByGuest(int id)
         {
             var procedures = await db.Guests.Where(g => g.Id == id).SelectMany(g => g.Procedures).ToListAsync();
@@ -84,8 +84,7 @@ namespace SanatoryApi.Controllers
                 return BadRequest("Номер пустой");
             }
             dirtyroom.Guests.Remove(guest);
-            guest.RoomId = 0;
-            db.Guests.Remove(guest);
+            guest.RoomId = 13;
             await db.SaveChangesAsync();
               
             var dirtystatus = db.Statuses.FirstOrDefault(s => s.Title == "Грязный");

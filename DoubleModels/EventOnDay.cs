@@ -1,9 +1,13 @@
-﻿namespace SanatoryApi.DoubleModels
+﻿using SanatoryApi.Models;
+
+namespace SanatoryApi.DoubleModels
 {
     public class EventOnDay
     {
-        public int DayId { get; set; }
+        public int Id { get; set; }
 
-        public int EventId { get; set; }
+        public DateTime Time { get; set; }
+
+        public virtual List<Event>? Events { get; set; } = new ();
     }
 }

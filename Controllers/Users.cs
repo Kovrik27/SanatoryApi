@@ -77,12 +77,12 @@ namespace SanatoryApi.Controllers
         [HttpPost("AddUserOn")]
         public async Task<ActionResult> AddUserOn(UserOn UserOn)
         {
-            var staff = await db.Staff.FirstOrDefault(s=> s.Id == UserOn.StaffId).Include(s => s.JobTitle).Where(s => !s.JobTitle.Title.Contains("Врач"));
+            var staff = await db.Staff.Include(s => s.JobTitle).FirstOrDefaultAsync(s => s.Id == UserOn.StaffId && !s.JobTitle.Title.Contains("Врач"));
             var user = db.Users.FirstOrDefault(s => s.Id == UserOn.UserId);
 
             if (staff == null)
             {
-                var doctor = await db.Staff.Include(s => s.JobTitle).Where(s => s.JobTitle.Title.Contains("Врач")).ToListAsync(); ;
+                var doctor = await db.Staff.Include(s => s.JobTitle).FirstOrDefaultAsync(s => s.Id == UserOn.StaffId && s.JobTitle.Title.Contains("Врач"));
 
                 if (doctor == null)
                 {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SanatoryApi.Models;
 using System.Data;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SanatoryApi.Controllers
 {
@@ -54,18 +55,18 @@ namespace SanatoryApi.Controllers
             }
         }
 
-        [HttpGet($"GetEventByDate/{date}")]
-        public async Task<ActionResult<Event>> GetEventsByDate(DateTime date)
-        {
-            var filteredEvents = await _context.Events
-                .Where(e => e.Date.Date == date.Date)
-                .ToListAsync();
+        //[HttpGet("GetEventByDate/{date}")]
+        //public async Task<ActionResult<Event>> GetEventsByDate(DateTime date)
+        //{
+        //    var filteredEvents = await db.Events
+        //        .Where(e => e.Days == date.Date)
+        //        .ToListAsync();
 
-            if (!filteredEvents.Any())
-            {
-                return NotFound(); 
-            }
-            return Ok(filteredEvents);
-        }
+        //    if (!filteredEvents.Any())
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(filteredEvents);
+        //}
     }
 }
