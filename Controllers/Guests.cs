@@ -43,13 +43,14 @@ namespace SanatoryApi.Controllers
             return Ok(gur);
         }
 
-        [HttpGet($"GetProceduresByGuest/{id}")]
+        [HttpGet("GetProceduresByGuest/{id}")]
         public async Task<List<Procedure>> GetProceduresByGuest(int id)
         {
             var procedures = await db.Guests.Where(g => g.Id == id).SelectMany(g => g.Procedures).ToListAsync();
             return procedures;
         }
 
+        [HttpGet("GetGuestId")]
         public async Task<ActionResult<Guest>> GetGuestId(int id)
         {
             var guest = await db.Guests.Include(s => s.Procedures).FirstOrDefaultAsync(s => s.UserId == id);

@@ -48,11 +48,11 @@ namespace SanatoryApi.Controllers
             {
                 daytime.Events.Add(eventt);
                 await db.SaveChangesAsync();
-                return Ok("Задача успешно присвоена сотруднику!");
+                return Ok("Мероприятие успешно запланировано!");
             }
             else
             {
-                return BadRequest("Сотрудник/Задача не найден(а)!");
+                return BadRequest("День/Мероприятие не найден(о)!");
             }
         }
 

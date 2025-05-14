@@ -60,18 +60,6 @@ namespace SanatoryApi.Controllers
             }
         }
 
-        [HttpPut("EditStatusProblem")]
-        public async Task<ActionResult> EditStatusProblem(Problem problem)
-        {
-            var problemToeditstatus = db.Problems.FirstOrDefault(s => s.Id == problem.Id);
-            if (problemToeditstatus != null)
-            {
-                problemToeditstatus.StatusProblem.Id = 3;
-                return Ok("Задача успешно завершена!");
-            }
-            else
-                return BadRequest("Задача не найдена!");
-        }
 
     }
 }

@@ -34,6 +34,14 @@ namespace SanatoryApi.DoubleModels
 
         public string Title { get; set; } = null!;
 
+        public string Description { get; set; } = null!;
+
+        public int Duration { get; set; }
+
+        public decimal Price { get; set; }
+
+        public DateTime? Date { get; set; }
+
     }
 
     public class GuestProcedureDTO

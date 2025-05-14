@@ -118,6 +118,7 @@ namespace SanatoryApi.Controllers
                 staff.JobTitle = null;
                 staff.Days = null;
                 staff.Problems.Add(new Models.Problem { Id = 1 });
+                staff.CabinetId = 1;
                 db.Staff.Add(staff);
             }
             catch (Exception ex)
@@ -216,6 +217,7 @@ namespace SanatoryApi.Controllers
             if (problem != null)
             {
                 problem.StatusProblemId = 3;
+                problem.StaffId = null;
                 await db.SaveChangesAsync();
                 return Ok("Задача успешно выполнена!");
             }
