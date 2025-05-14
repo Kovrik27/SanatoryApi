@@ -39,20 +39,22 @@ namespace SanatoryApi.Controllers
             return Ok(dev);
         }
 
-        //[HttpPost("AddNewEventOnDay")]
-        //public async Task<ActionResult> AddNewEventOnDay(EventOnDay eventOnDay)
-        //{
-        //    var day = db.Daytimes.FirstOrDefault(d => d.Time == date);
-        //    if (day == null)
-        //    {
-        //        day = new EventOnDay { Day = date };
-        //        eventsOnDays.Add(day);
-        //    }
-        //    newEvent.Id = day.Events.Max(e => e.Id) + 1;
-        //    day.Events.Add(newEvent);
-        //    await db.SaveChangesAsync();
-        //    return Ok("Мероприятие на день успешно добавлено!");
-        //}
+        [HttpPost("AddEventOnDaytime")]
+        public async Task<ActionResult> AddEventOnDaytime(EventOnDay eventOnDay)
+        {
+            var daytime = db.Daytimes.FirstOrDefault(s => s.Id == eventOnDay.DaytimeId);
+            var eventt = db.Events.FirstOrDefault(s => s.Id == eventOnDay.EventId);
+            if (daytime != null && eventt != null)
+            {
+                daytime.Events.Add(eventt);
+                await db.SaveChangesAsync();
+                return Ok("Задача успешно присвоена сотруднику!");
+            }
+            else
+            {
+                return BadRequest("Сотрудник/Задача не найден(а)!");
+            }
+        }
 
 
         [HttpDelete("DeleteEvent/{id}")]

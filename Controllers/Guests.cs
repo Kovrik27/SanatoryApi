@@ -43,11 +43,37 @@ namespace SanatoryApi.Controllers
             return Ok(gur);
         }
 
-        [HttpGet("GetProceduresByGuest/{id}")]
+        [HttpGet($"GetProceduresByGuest/{id}")]
         public async Task<List<Procedure>> GetProceduresByGuest(int id)
         {
             var procedures = await db.Guests.Where(g => g.Id == id).SelectMany(g => g.Procedures).ToListAsync();
             return procedures;
+        }
+
+        public async Task<ActionResult<Guest>> GetGuestId(int id)
+        {
+            var guest = await db.Guests.Include(s => s.Procedures).FirstOrDefaultAsync(s => s.UserId == id);
+
+            if (guest == null)
+            {
+                return NotFound();
+            }
+            var guestid = new GuestWithRoom
+            {
+                Id = guest.Id,
+                Lastname = guest.Lastname,
+                Name = guest.Name,
+                Surname = guest.Surname,
+                DataArrival = guest.DataArrival,
+                DataOfDeparture = guest.DataOfDeparture,
+                Pasport = guest.Pasport,
+                Policy = guest.Policy,
+                RoomId = guest.RoomId,
+                Room = guest.Room,
+                Procedures = guest.Procedures.Select(s => new ProcedureDTO {Id = s.Id, Date = s.Date, Description = s.Description, Duration = s.Duration, Price = s.Price, Title = s.Title }).ToList(),
+            };
+
+            return Ok(guestid);
         }
 
 

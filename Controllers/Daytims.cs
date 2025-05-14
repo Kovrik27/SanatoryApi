@@ -55,18 +55,18 @@ namespace SanatoryApi.Controllers
             }
         }
 
-        //[HttpGet("GetEventByDate/{date}")]
-        //public async Task<ActionResult<Event>> GetEventsByDate(DateTime date)
-        //{
-        //    var filteredEvents = await db.Events
-        //        .Where(e => e.Days == date.Date)
-        //        .ToListAsync();
+        [HttpGet("GetEventByDate/{date}")]
+        public async Task<ActionResult<List<Event>>> GetEventsByDate(DateTime date)
+        {
+            var filteredEvents = await db.Events
+                .Where(e => e.Days.Any(s => s.Time.Date == date.Date))
+                .ToListAsync();
 
-        //    if (!filteredEvents.Any())
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(filteredEvents);
-        //}
+            if (!filteredEvents.Any())
+            {
+                return NotFound();
+            }
+            return Ok(filteredEvents);
+        }
     }
 }
