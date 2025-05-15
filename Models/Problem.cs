@@ -16,5 +16,5 @@ public partial class Problem
 
     public virtual Staff? Staff { get; set; }
 
-    public virtual StatusProblem StatusProblem { get; set; } = null!;
+    public virtual StatusProblem? StatusProblem { get; set; } = null;
 }

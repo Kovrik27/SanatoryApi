@@ -25,17 +25,23 @@ namespace SanatoryApi.Controllers
         [HttpPost("AddNewUser")]
         public async Task<ActionResult> AddUser(User user)
         {
-            if (string.IsNullOrEmpty(user.Login) || string.IsNullOrEmpty(user.Password))
-                return BadRequest("Введите данные");
-            var check = db.Users.FirstOrDefault(s => s.Login == user.Login && s.Password == user.Password);
-            if (check == null)
+            user.Role.Id = 0;
+
+            if (user == null)
+            {
+                return BadRequest("Пользователь не может быть null");
+            }
+
+            try
             {
                 db.Users.Add(user);
                 await db.SaveChangesAsync();
                 return Ok("Новый пользователь успешно добавлен!");
             }
-            else
-                return BadRequest("Такой логин уже существует");
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Ошибка при добавлении пользователя: {ex.Message}");
+            }
         }
 
         [HttpPost("CheckUser")]

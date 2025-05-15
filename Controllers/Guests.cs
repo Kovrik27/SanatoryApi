@@ -50,7 +50,7 @@ namespace SanatoryApi.Controllers
             return procedures;
         }
 
-        [HttpGet("GetGuestId")]
+        [HttpGet("GetGuestId/{id}")]
         public async Task<ActionResult<Guest>> GetGuestId(int id)
         {
             var guest = await db.Guests.Include(s => s.Procedures).FirstOrDefaultAsync(s => s.UserId == id);
