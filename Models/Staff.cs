@@ -27,7 +27,7 @@ public partial class Staff
 
     public virtual JobTitle JobTitle { get; set; } = null!;
 
-    public virtual ICollection<Problem>? Problems { get; set; } = new List<Problem>();
+    public virtual ICollection<Problem> Problems { get; set; } = new List<Problem>();
 
     public virtual User? User { get; set; }
 

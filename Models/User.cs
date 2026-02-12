@@ -13,6 +13,12 @@ public partial class User
 
     public int? RoleId { get; set; }
 
+    public string? Photo { get; set; }
+
+    public int? FeedbackId { get; set; }
+
+    public virtual Feedback? Feedback { get; set; }
+
     public virtual ICollection<Guest> Guests { get; set; } = new List<Guest>();
 
     public virtual Role? Role { get; set; }

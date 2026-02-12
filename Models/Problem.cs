@@ -11,10 +11,15 @@ public partial class Problem
 
     public string Place { get; set; } = null!;
 
-    public int StatusProblemId { get; set; }
+    public int? StatusProblemId { get; set; }
+
     public int? StaffId { get; set; }
+
+    public int? PriorityProblemId { get; set; }
+
+    public virtual PriorityProblem? PriorityProblem { get; set; }
 
     public virtual Staff? Staff { get; set; }
 
-    public virtual StatusProblem? StatusProblem { get; set; } = null;
+    public virtual StatusProblem? StatusProblem { get; set; }
 }

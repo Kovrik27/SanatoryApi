@@ -11,5 +11,7 @@ public partial class Cabinet
 
     public string? Type { get; set; }
 
+    public string? Place { get; set; }
+
     public virtual ICollection<Staff> Staff { get; set; } = new List<Staff>();
 }

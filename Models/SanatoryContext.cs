@@ -24,13 +24,19 @@ public partial class SanatoryContext : DbContext
 
     public virtual DbSet<Event> Events { get; set; }
 
+    public virtual DbSet<Feedback> Feedbacks { get; set; }
+
     public virtual DbSet<Guest> Guests { get; set; }
 
     public virtual DbSet<JobTitle> JobTitles { get; set; }
 
+    public virtual DbSet<PriorityProblem> PriorityProblems { get; set; }
+
     public virtual DbSet<Problem> Problems { get; set; }
 
     public virtual DbSet<Procedure> Procedures { get; set; }
+
+    public virtual DbSet<Resource> Resources { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
@@ -64,6 +70,7 @@ public partial class SanatoryContext : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
             entity.Property(e => e.Number).HasColumnType("int(11)");
+            entity.Property(e => e.Place).HasMaxLength(255);
             entity.Property(e => e.Type)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
@@ -92,7 +99,7 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
-
+            entity.Property(e => e.Time).HasColumnType("datetime");
 
             entity.HasMany(d => d.Events).WithMany(p => p.Days)
                 .UsingEntity<Dictionary<string, object>>(
@@ -134,6 +141,19 @@ public partial class SanatoryContext : DbContext
                 .HasDefaultValueSql("''");
         });
 
+        modelBuilder.Entity<Feedback>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("Feedback");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnType("int(11)");
+            entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.Mark).HasColumnType("int(11)");
+        });
+
         modelBuilder.Entity<Guest>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -145,6 +165,8 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
                 .HasColumnName("ID");
+            entity.Property(e => e.DataArrival).HasColumnType("datetime");
+            entity.Property(e => e.DataOfDeparture).HasColumnType("datetime");
             entity.Property(e => e.Lastname)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
@@ -207,14 +229,29 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Title).HasMaxLength(255);
         });
 
+        modelBuilder.Entity<PriorityProblem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("PriorityProblem");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnType("int(11)");
+            entity.Property(e => e.Title).HasMaxLength(255);
+        });
+
         modelBuilder.Entity<Problem>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.ToTable("Problem");
 
-            entity.HasIndex(e => e.StatusProblemId, "FK_Problem_StatusProblem_Id");
+            entity.HasIndex(e => e.PriorityProblemId, "FK_Problem_PriorityProblem_Id");
+
             entity.HasIndex(e => e.StaffId, "FK_Problem_Staff_ID");
+
+            entity.HasIndex(e => e.StatusProblemId, "FK_Problem_StatusProblem_Id");
 
             entity.Property(e => e.Id)
                 .HasColumnType("int(11)")
@@ -225,22 +262,23 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Place)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
+            entity.Property(e => e.PriorityProblemId).HasColumnType("int(11)");
+            entity.Property(e => e.StaffId).HasColumnType("int(11)");
             entity.Property(e => e.StatusProblemId)
                 .HasDefaultValueSql("'1'")
                 .HasColumnType("int(11)");
-            entity.Property(e => e.StaffId)
-               .HasColumnType("int(11)");
+
+            entity.HasOne(d => d.PriorityProblem).WithMany(p => p.Problems)
+                .HasForeignKey(d => d.PriorityProblemId)
+                .HasConstraintName("FK_Problem_PriorityProblem_Id");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.Problems)
+                .HasForeignKey(d => d.StaffId)
+                .HasConstraintName("FK_Problem_Staff_ID");
 
             entity.HasOne(d => d.StatusProblem).WithMany(p => p.Problems)
                 .HasForeignKey(d => d.StatusProblemId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Problem_StatusProblem_Id");
-
-            entity.HasOne(d => d.Staff).WithMany(p => p.Problems)
-               .HasForeignKey(d => d.StaffId)
-               .OnDelete(DeleteBehavior.ClientSetNull)
-               .HasConstraintName("FK_Problem_Staff_ID");
-
         });
 
         modelBuilder.Entity<Procedure>(entity =>
@@ -257,6 +295,17 @@ public partial class SanatoryContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
+        });
+
+        modelBuilder.Entity<Resource>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnType("int(11)");
+            entity.Property(e => e.Amount).HasPrecision(8, 2);
+            entity.Property(e => e.Title).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -391,16 +440,24 @@ public partial class SanatoryContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
+            entity.HasIndex(e => e.FeedbackId, "FK_Users_Feedback_Id");
+
             entity.HasIndex(e => e.RoleId, "FK_Users_Role_Id");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
+            entity.Property(e => e.FeedbackId).HasColumnType("int(11)");
             entity.Property(e => e.Login)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
             entity.Property(e => e.Password)
                 .HasMaxLength(255)
                 .HasDefaultValueSql("''");
+            entity.Property(e => e.Photo).HasMaxLength(255);
             entity.Property(e => e.RoleId).HasColumnType("int(11)");
+
+            entity.HasOne(d => d.Feedback).WithMany(p => p.Users)
+                .HasForeignKey(d => d.FeedbackId)
+                .HasConstraintName("FK_Users_Feedback_Id");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
