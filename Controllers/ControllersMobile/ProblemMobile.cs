@@ -21,13 +21,12 @@ namespace SanatoryApi.Controllers.ControllersMobile
             return await db.Problems.Where(s => s.StaffId == id).ToListAsync();
         }
 
-        [HttpPost("AddNewProblem")]
-        public async Task<ActionResult> AddNewProblem(Problem problem)
+        [HttpPut("EditStatusProblem")]
+        public async Task<ActionResult> EditStatusProblem(Problem problem)
         {
             problem.StatusProblemId = 3;
-            db.Problems.Add(problem);
             await db.SaveChangesAsync();
-            return Ok("Новая задача успешно добавлена!");
+            return Ok("Задача успешно выполнена!");
         }
     }
 }

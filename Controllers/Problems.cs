@@ -30,7 +30,7 @@ namespace SanatoryApi.Controllers
         [HttpPost("AddNewProblem")]
         public async Task<ActionResult> AddNewProblem(Problem problem)
         {
-            problem.StatusProblemId = 3;
+            problem.StatusProblemId = 1;
             db.Problems.Add(problem);
             await db.SaveChangesAsync();
             return Ok("Новая задача успешно добавлена!");
@@ -42,6 +42,13 @@ namespace SanatoryApi.Controllers
                 db.Problems.Update(problem);
                 await db.SaveChangesAsync();
                 return Ok("Данные задачи успешно изменены!");
+        }
+        [HttpPut("EditStatusProblem")]
+        public async Task<ActionResult> EditStatusProblem(Problem problem)
+        {
+            problem.StatusProblemId = 3;
+            await db.SaveChangesAsync();
+            return Ok("Задача успешно выполнена!");
         }
 
         [HttpDelete("DeleteProblem/{id}")]
